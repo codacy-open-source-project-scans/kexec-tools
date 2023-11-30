@@ -87,7 +87,8 @@ int pei_loongarch_load(int argc, char **argv, const char *buf,
 	/* Get kernel entry point */
 	info->entry = (void *)kernel_entry;
 
-	hole_min = kernel_segment + loongarch_mem.image_size;
+	hole_min = kernel_segment + loongarch_mem.text_offset +
+		loongarch_mem.image_size;
 
 	/* Create and initialize elf core header segment */
 	if (info->kexec_flags & KEXEC_ON_CRASH) {
@@ -100,7 +101,8 @@ int pei_loongarch_load(int argc, char **argv, const char *buf,
 	}
 
 	/* Load the kernel */
-	add_segment(info, buf, len, kernel_segment, loongarch_mem.image_size);
+	add_segment(info, buf, len, kernel_segment + loongarch_mem.text_offset,
+				loongarch_mem.image_size);
 
 	/* Prepare and load dtb and initrd data */
 	result = loongarch_load_other_segments(info, hole_min);
